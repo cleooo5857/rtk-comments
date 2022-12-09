@@ -9,13 +9,11 @@ function TodoForm({ todoList, setTodoList }) {
     const [todo, onChangeTodo, setTodo] = useInput('');
     const dispatch = useDispatch();
     const addTodoState = useSelector((state) => state.todo.addtodo);
-    console.log(addTodoState);
 
     const onClickAddBtn = () => {
       dispatch(addTodos({content:todo}))
       
     };
-
 
 
     useEffect(()=> {

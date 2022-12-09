@@ -4,6 +4,7 @@ import axios from 'axios';
 import useInput from 'hooks/useInput';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { DeleteTodos } from 'reducer/todo';
 import styled from 'styled-components';
 
@@ -29,8 +30,8 @@ function Todo({ todo, todoList, setTodoList }) {
                     //     console.log(err);
                     // }
         
-                    const id = todo.id
-                    console.log(id);
+        const id = todo.id
+        console.log(todo);
         dispatch(DeleteTodos(id))
     };
     const onUpdateTodo = async () => {
@@ -94,7 +95,9 @@ function Todo({ todo, todoList, setTodoList }) {
                 {edit ? (
                     <textarea value={newTodo} onChange={onChangeNewTodo}></textarea>
                 ) : (
-                    todo.content
+                    <Link to={`/todo/:${todo.id}`} key={todo.id}>
+                            {todo.content}
+                    </Link>
                 )}
             </div>
             <button onClick={onDeleteTodo}>삭제</button>

@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { TodoApi } from 'apis/todoApi';
+import { CommentApi } from 'apis/comment';
 import { reducerUtils } from '../utils/reducerUtils';
 // todo/addTodo 타입명 key값이라 생각하면됨
 // 비동기 통신을 하기위한 함수, return값에는 비동기 통신의 성공한 data.data가 담겨있다.
@@ -9,7 +10,7 @@ import { reducerUtils } from '../utils/reducerUtils';
 export const addTodos = createAsyncThunk('todo/addTodo', async (todo) => {
     try {
         const response = await TodoApi.createTodo(todo);
-        return response.data.data;
+        return response.data.data
     } catch (err) {
         return err;
     }
@@ -23,8 +24,20 @@ export const getTodos = createAsyncThunk('todo/getTodo', async () => {
     }
 });
 
+export const getDetailTodos = createAsyncThunk('todo/getDetailTodo', async (id) => {
+    try {
+        const response = await TodoApi.getdetailTodo({id})
+        return response.data.data
+    } catch (err) {
+        console.log(err);
+    }
+});
+
+
+
 export const DeleteTodos = createAsyncThunk('todo/DeleteTodo', async (id) => {
     try{
+        console.log(id);
         const response = await TodoApi.deleteTodo({id})
         return response.data.data
     }catch(err){
@@ -32,8 +45,21 @@ export const DeleteTodos = createAsyncThunk('todo/DeleteTodo', async (id) => {
     }
 })
 
+export const addComments = createAsyncThunk('todo/addComment', async (title,data) => {
+    try {
+        const response = await CommentApi.createComment(title,data)
+        console.log(response);
+        return response.data.data
+    } catch (err) {
+        console.log(err);
+    }
+});
+
 const initialState = {
-    todos: [],
+    todos: [
+
+        
+    ],
     addtodo: {
         loading: false,
         done: false,
@@ -45,6 +71,16 @@ const initialState = {
         err: null,
     },
     deleteTodos: {
+        loading: false,
+        done: false,
+        err: null,
+    },
+    getDetailTodos: {
+        loading: false,
+        done: false,
+        err: null,
+    },
+    addComments: {
         loading: false,
         done: false,
         err: null,
@@ -71,7 +107,8 @@ export const todoSlice = createSlice({
         builder.addCase(addTodos.rejected, (state, action) => {
             reducerUtils.err(state.addtodo,action.payload)
         });
-        //
+
+        // todolist읽어오기
         builder.addCase(getTodos.pending, (state) => {
             state.getTodos.loading = true;
             state.getTodos.done = false;
@@ -90,6 +127,20 @@ export const todoSlice = createSlice({
             state.getTodos.err = action.payload;
         });
 
+        // 상세페이지 
+        builder.addCase(getDetailTodos.pending, (state) => {
+            reducerUtils.loading(state.getDetailTodos)
+        });
+        builder.addCase(getDetailTodos.fulfilled, (state,action) => {
+            reducerUtils.success(state.getDetailTodos)
+            state.todos = action.payload
+            
+        });
+
+        builder.addCase(getDetailTodos.rejected, (state, action) => {
+            reducerUtils.err(state.getDetailTodos,action.payload)
+        });
+
         //삭제
         builder.addCase(DeleteTodos.pending, (state) => {
             reducerUtils.loading(state.deleteTodos)
@@ -103,6 +154,21 @@ export const todoSlice = createSlice({
 
         builder.addCase(DeleteTodos.rejected, (state, action) => {
             reducerUtils.err(state.deleteTodos, action.payload)
+        });
+
+
+        // 댓글
+        builder.addCase(addComments.pending, (state) => {
+            reducerUtils.loading(state.addComments)
+        });
+
+        builder.addCase(addComments.fulfilled, (state,action) => {
+            reducerUtils.success(state.addComments)
+            // state.todos.unshift(action.payload)
+        });
+
+        builder.addCase(addComments.rejected, (state, action) => {
+            reducerUtils.err(state.addComments, action.payload)
         });
     },
 });

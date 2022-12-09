@@ -4,11 +4,13 @@ const path = '/todo';
 
 export const TodoApi = {
     createTodo: (data) => {
+        //http://localhost:9000
         return axiosInstance.post(path, data);
     },
-    // getTodo:() =>{
-    //     return axiosInstance.get(path, { content })
-    // },
+    getdetailTodo:({id}) =>{
+        //http://localhost:9000/todo
+        return axiosInstance.get(path + '/' + id)
+    },
     getTodos:() => {
         return axiosInstance.get(path);
     }, 
